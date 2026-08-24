@@ -1,4 +1,4 @@
-# Loden Light palette audit
+# Loden Day palette audit
 
 Overall: **PASS**
 
@@ -12,7 +12,7 @@ Overall: **PASS**
 | normal text | 9.68:1 | 82.3 | PASS |
 | bright text | 12.19:1 | 86.6 | PASS |
 | highlighted text | 5.32:1 | 37.5 | PASS |
-| highlight edge on Loden Light | 3.11:1 | 50.8 | PASS |
+| highlight edge on Loden Day | 3.11:1 | 50.8 | PASS |
 | highlight edge on white | 3.95:1 | 66.6 | PASS |
 | syntax olive | 5.22:1 | 66.9 | PASS |
 | syntax sage | 4.84:1 | 64.8 | PASS |

@@ -1,4 +1,4 @@
--- Generated from palette/loden-light.json; do not edit by hand.
+-- Generated from palette/loden-day.json; do not edit by hand.
 return {
   raw = {
     ["colorSpace"] = "sRGB",
@@ -6,8 +6,8 @@ return {
       ["background"] = "#B17232",
       ["foreground"] = "#000000",
     },
-    ["name"] = "Loden Light",
-    ["slug"] = "loden-light",
+    ["name"] = "Loden Day",
+    ["slug"] = "loden-day",
     ["polarity"] = "light",
     ["backgrounds"] = {
       ["crust"] = "#D2C9B6",

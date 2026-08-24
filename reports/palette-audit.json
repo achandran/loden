@@ -1,5 +1,5 @@
 {
-  "palette": "Loden",
+  "palette": "Loden Night",
   "colorSpace": "sRGB",
   "passed": true,
   "failures": [],
@@ -65,7 +65,7 @@
       "passed": true
     },
     {
-      "name": "highlight edge on Loden",
+      "name": "highlight edge on Loden Night",
       "foreground": "#B17232",
       "background": "#171812",
       "wcag": 4.53,

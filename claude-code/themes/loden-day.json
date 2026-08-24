@@ -1,5 +1,5 @@
 {
-  "name": "Loden Light",
+  "name": "Loden Day",
   "base": "light",
   "overrides": {
     "claude": "#87541F",

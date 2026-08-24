@@ -14,13 +14,13 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "loden",
+      colorscheme = "loden-night",
     },
   },
   {
     "nvim-lualine/lualine.nvim",
     opts = {
-      options = { theme = "loden" },
+      options = { theme = "loden-night" },
     },
   },
 }

@@ -10,7 +10,7 @@ function M.setup(opts)
 end
 
 function M.load(variant)
-  local is_light = variant == "light"
+  local is_light = variant == "day" or variant == "light"
   local palette = require(is_light and "loden.palette_light" or "loden.palette")
   local raw = palette.raw
   local bg, fg, accent, diff = raw.backgrounds, raw.foregrounds, raw.accents, raw.diff
@@ -147,7 +147,7 @@ function M.load(variant)
 
   vim.o.background = is_light and "light" or "dark"
   require("kanso").load(is_light and "pearl" or "ink")
-  vim.g.colors_name = is_light and "loden-light" or "loden"
+  vim.g.colors_name = is_light and "loden-day" or "loden-night"
 end
 
 return M

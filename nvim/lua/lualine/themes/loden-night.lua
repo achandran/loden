@@ -1,3 +1,4 @@
+-- Loden Night
 local p = require("loden.palette").raw
 local bg, fg, a = p.backgrounds, p.foregrounds, p.accents
 

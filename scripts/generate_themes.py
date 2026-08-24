@@ -268,6 +268,15 @@ def generate_preview(palettes: dict[str, dict]) -> None:
 
 def main() -> None:
     palettes = {"dark": load_palette("loden"), "light": load_palette("loden-light")}
+    legacy_outputs = [
+        ROOT / "ghostty/themes/loden", ROOT / "ghostty/themes/loden-light",
+        ROOT / "codex/themes/loden.tmTheme", ROOT / "codex/themes/loden-light.tmTheme",
+        ROOT / "claude-code/themes/loden.json", ROOT / "claude-code/themes/loden-light.json",
+        ROOT / "slack/loden.txt", ROOT / "slack/loden-light.txt",
+        ROOT / "linear/loden.txt", ROOT / "linear/loden-light.txt",
+    ]
+    for output in legacy_outputs:
+        output.unlink(missing_ok=True)
     for palette in palettes.values():
         generate_ghostty(palette)
         generate_neovim_palette(palette)
@@ -276,7 +285,7 @@ def main() -> None:
         generate_app_palettes(palette)
     generate_shared_highlights(palettes["dark"])
     generate_preview(palettes)
-    print("Generated dark/light Loden themes for all supported applications")
+    print("Generated Loden Day and Loden Night themes for all supported applications")
 
 
 if __name__ == "__main__":
