@@ -4,8 +4,8 @@ import ImageIO
 
 let width = 6016
 let height = 3760
-let lightHex = "EAE4D5"
-let darkHex = "171812"
+let dayHex = "EAE4D5"
+let nightHex = "171812"
 
 enum WallpaperError: Error, CustomStringConvertible {
   case invalidHex(String)
@@ -82,8 +82,8 @@ func appearanceMetadata() throws -> CGImageMetadata {
 }
 
 func generate(output: URL) throws {
-  let light = try solidImage(hex: lightHex)
-  let dark = try solidImage(hex: darkHex)
+  let day = try solidImage(hex: dayHex)
+  let night = try solidImage(hex: nightHex)
   guard let destination = CGImageDestinationCreateWithURL(
     output as CFURL,
     "public.heic" as CFString,
@@ -92,8 +92,8 @@ func generate(output: URL) throws {
   ) else { throw WallpaperError.destinationCreation }
 
   let options = [kCGImageDestinationLossyCompressionQuality: 1.0] as CFDictionary
-  CGImageDestinationAddImageAndMetadata(destination, light, try appearanceMetadata(), options)
-  CGImageDestinationAddImage(destination, dark, options)
+  CGImageDestinationAddImageAndMetadata(destination, day, try appearanceMetadata(), options)
+  CGImageDestinationAddImage(destination, night, options)
   guard CGImageDestinationFinalize(destination) else { throw WallpaperError.finalization }
 }
 
@@ -109,8 +109,8 @@ func inspect(input: URL) throws {
   let apr = tag.flatMap { CGImageMetadataTagCopyValue($0) as? String } ?? "missing"
   print("count=\(count)")
   print("size=\(width)x\(height)")
-  print("light=#\(lightHex) frame=0")
-  print("dark=#\(darkHex) frame=1")
+  print("day=#\(dayHex) frame=0")
+  print("night=#\(nightHex) frame=1")
   print("apr=\(apr)")
 }
 

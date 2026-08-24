@@ -2,12 +2,12 @@
 
 A warm theme family inspired by the olive-green dial, brushed steel, and cream markings of a Formex Reef watch. Loden is designed for sustained software-engineering work, with particular attention to readable syntax and high-information diffs in Neovim, Ghostty, Codex, and Claude Code.
 
-Loden includes coordinated dark and light variants. Both are authored from one canonical palette and share the ochre interaction color `#B17232` with black selected text.
+Loden includes equal Day and Night variants. Both are authored from one canonical palette and share the ochre interaction color `#B17232` with black selected text.
 
 | Variant | Background | Foreground | Intended use |
 | --- | --- | --- | --- |
-| Loden | `#171812` | `#C9BA99` | Low-light and evening work |
-| Loden Light | `#EAE4D5` | `#34362C` | Bright offices and daytime work |
+| Loden Night | `#171812` | `#C9BA99` | Low-light and evening work |
+| Loden Day | `#EAE4D5` | `#34362C` | Bright offices and daytime work |
 
 ## Supported applications
 
@@ -51,19 +51,20 @@ The audit writes [the dark report](reports/palette-audit.md), [the light report]
 
 Generated artifacts:
 
-- `ghostty/themes/loden`
-- `ghostty/themes/loden-light`
-- `nvim/colors/loden.lua`
-- `nvim/colors/loden-light.lua`
+- `ghostty/themes/loden-night`
+- `ghostty/themes/loden-day`
+- `nvim/colors/loden-night.lua`
+- `nvim/colors/loden-day.lua`
 - `nvim/lua/loden/`
 - `nvim/lazyvim-plugin.lua`
 - `shell/loden.zsh`
 - `macos/apply-highlight.sh`
+- `wallpapers/loden.heic`
 - `firefox/manifest.json`
-- `codex/themes/loden.tmTheme` and `codex/themes/loden-light.tmTheme`
-- `claude-code/themes/loden.json` and `claude-code/themes/loden-light.json`
-- `slack/loden.txt` and `slack/loden-light.txt`
-- `linear/loden.txt` and `linear/loden-light.txt`
+- `codex/themes/loden-night.tmTheme` and `codex/themes/loden-day.tmTheme`
+- `claude-code/themes/loden-night.json` and `claude-code/themes/loden-day.json`
+- `slack/loden-night.txt` and `slack/loden-day.txt`
+- `linear/loden-night.txt` and `linear/loden-day.txt`
 
 The shared interaction pair is ochre `#B17232` with pure black text `#000000`. It drives Neovim Visual mode, Ghostty selections and cursor, Zsh selections, the macOS system highlight, and Firefox URL-bar selection.
 
@@ -71,23 +72,23 @@ The shared interaction pair is ochre `#B17232` with pure black text `#000000`. I
 
 ### Ghostty
 
-Copy `ghostty/themes/loden` and `ghostty/themes/loden-light` into `~/.config/ghostty/themes/`. To follow macOS appearance automatically:
+Copy `ghostty/themes/loden-night` and `ghostty/themes/loden-day` into `~/.config/ghostty/themes/`. To follow macOS appearance automatically:
 
 ```ini
-theme = light:loden-light,dark:loden
+theme = light:loden-day,dark:loden-night
 ```
 
 The generated dark theme uses Berkeley Mono Retina without font thickening. The light theme uses Berkeley Mono with `font-thicken = true`.
 
 ### Neovim and LazyVim
 
-Add `nvim/lazyvim-plugin.lua` to your LazyVim plugin specifications and place the generated `nvim/colors/` and `nvim/lua/loden/` files somewhere on Neovim's runtime path. Select `loden` or `loden-light` with `:colorscheme`.
+Add `nvim/lazyvim-plugin.lua` to your LazyVim plugin specifications and place the generated `nvim/colors/` and `nvim/lua/loden/` files somewhere on Neovim's runtime path. Select `loden-night` or `loden-day` with `:colorscheme`.
 
 ## AI coding tools
 
 For Codex CLI, copy the generated `.tmTheme` files into `~/.codex/themes/`, then choose one with `/theme`. These themes explicitly define `markup.inserted` and `markup.deleted`, so Codex uses Loden's tuned diff backgrounds instead of its built-in mint and pink fallbacks.
 
-For Claude Code 2.1.118 or newer, copy the generated JSON files into `~/.claude/themes/`, then choose one with `/theme`. The generated themes define full-line, dimmed-context, and word-level diff colors. Claude Code does not currently combine two custom files behind its `auto` selection, so select Loden or Loden Light when appearance changes.
+For Claude Code 2.1.118 or newer, copy the generated JSON files into `~/.claude/themes/`, then choose one with `/theme`. The generated themes define full-line, dimmed-context, and word-level diff colors. Claude Code does not currently combine two custom files behind its `auto` selection, so select Loden Night or Loden Day when appearance changes.
 
 ## Slack and Linear
 
@@ -104,3 +105,15 @@ In Linear Preferences → Interface and theme, create a custom theme and paste t
 - Application directories: generated integrations ready to install or import
 
 Generated files should not be edited directly. Change the canonical palette or generator and rerun the build instead.
+
+## Dynamic macOS wallpaper
+
+`wallpapers/loden.heic` contains two 6016×3760 sRGB frames and Apple's appearance metadata. macOS displays the warm `#EAE4D5` Day frame in Light appearance and the olive-black `#171812` Night frame in Dark appearance.
+
+To regenerate and inspect it on macOS:
+
+```sh
+swiftc -module-cache-path /private/tmp/loden-swift-cache scripts/generate_wallpaper.swift -o /private/tmp/generate-loden-wallpaper
+/private/tmp/generate-loden-wallpaper generate wallpapers/loden.heic
+/private/tmp/generate-loden-wallpaper inspect wallpapers/loden.heic
+```
