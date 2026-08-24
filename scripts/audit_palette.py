@@ -40,6 +40,13 @@ def main(variant: str = "loden-night") -> None:
         ("inline add", diff["inlineForeground"], diff["addEmphasis"], 7.0, 60),
         ("inline delete", diff["inlineForeground"], diff["deleteEmphasis"], 7.0, 60),
         ("inline change", diff["inlineForeground"], diff["changeEmphasis"], 7.0, 60),
+        (
+            "inline diff marker",
+            highlight["foreground"],
+            highlight["background"],
+            4.5,
+            35,
+        ),
         ("conflict marker", diff["conflictForeground"], diff["conflictBackground"], 7.0, 60),
         *[
             (f"ANSI {name}", color, backgrounds["base"], 3.0 if name == "brightBlack" else 4.5, 20 if name == "brightBlack" else 44)

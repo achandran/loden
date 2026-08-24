@@ -30,6 +30,7 @@ Overall: **PASS**
 | inline add | 7.09:1 | -71.1 | PASS |
 | inline delete | 7.83:1 | -73.0 | PASS |
 | inline change | 7.34:1 | -71.8 | PASS |
+| inline diff marker | 5.32:1 | 37.5 | PASS |
 | conflict marker | 7.79:1 | -63.5 | PASS |
 | ANSI red | 6.23:1 | -46.2 | PASS |
 | ANSI green | 7.94:1 | -56.7 | PASS |

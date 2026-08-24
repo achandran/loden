@@ -245,6 +245,16 @@
       "passed": true
     },
     {
+      "name": "inline diff marker",
+      "foreground": "#000000",
+      "background": "#B17232",
+      "wcag": 5.32,
+      "wcagTarget": 4.5,
+      "apcaLc": 37.5,
+      "apcaTarget": 35,
+      "passed": true
+    },
+    {
       "name": "conflict marker",
       "foreground": "#503348",
       "background": "#E2D3DE",

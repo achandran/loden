@@ -121,7 +121,7 @@ function M.load(variant)
         DiffAdd = { fg = diff.addForeground, bg = diff.addBackground },
         DiffDelete = { fg = diff.deleteForeground, bg = diff.deleteBackground },
         DiffChange = { fg = diff.changeForeground, bg = diff.changeBackground },
-        DiffText = { fg = diff.inlineForeground, bg = diff.changeEmphasis, bold = true },
+        DiffText = { fg = highlight.foreground, bg = highlight.background, bold = true },
         Added = { fg = diff.addForeground },
         Removed = { fg = diff.deleteForeground },
         Changed = { fg = diff.changeForeground },
