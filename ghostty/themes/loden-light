@@ -1,0 +1,31 @@
+# Loden Light — generated from palette/loden-light.json; do not edit by hand.
+# Warm, readability-first foundations and diff-aware ANSI colors.
+
+palette = 0=#24251E
+palette = 1=#84342F
+palette = 2=#405A34
+palette = 3=#5A4006
+palette = 4=#345663
+palette = 5=#67475C
+palette = 6=#2F5D55
+palette = 7=#484A3D
+palette = 8=#7B7A6B
+palette = 9=#A13F3B
+palette = 10=#4F693D
+palette = 11=#684C0A
+palette = 12=#3E6270
+palette = 13=#765369
+palette = 14=#37685F
+palette = 15=#34362C
+palette = 16=#87541F
+palette = 17=#924A2F
+
+background = #EAE4D5
+foreground = #34362C
+cursor-color = #B17232
+cursor-text = #000000
+selection-background = #B17232
+selection-foreground = #000000
+
+font-family = Berkeley Mono
+font-thicken = true

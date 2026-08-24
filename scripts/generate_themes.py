@@ -1,0 +1,283 @@
+"""Generate Loden themes and preview artifacts from the canonical palettes."""
+
+from __future__ import annotations
+
+import json
+import plistlib
+import re
+
+from lodenlib import ROOT, load_palette
+
+
+def lua_table(value, indent: int = 0) -> str:
+    space = " " * indent
+    if isinstance(value, dict):
+        rows = ["{"]
+        for key, item in value.items():
+            rows.append(f'{" " * (indent + 2)}["{key}"] = {lua_table(item, indent + 2)},')
+        rows.append(f"{space}}}")
+        return "\n".join(rows)
+    if isinstance(value, list):
+        return "{ " + ", ".join(lua_table(item) for item in value) + " }"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return f'"{value}"'
+
+
+def generate_ghostty(palette: dict) -> None:
+    bg, fg = palette["backgrounds"], palette["foregrounds"]
+    highlight = palette["highlight"]
+    ansi_tokens = palette["ansi"]
+    ansi = list(ansi_tokens.values())
+    is_light = palette["polarity"] == "light"
+    lines = [
+        f"# {palette['name']} — generated from palette/{palette['slug']}.json; do not edit by hand.",
+        "# Warm, readability-first foundations and diff-aware ANSI colors.",
+        "",
+        *[f"palette = {index}={color}" for index, color in enumerate(ansi)],
+        "",
+        f'background = {bg["base"]}',
+        f'foreground = {fg["text"]}',
+        f'cursor-color = {highlight["background"]}',
+        f'cursor-text = {highlight["foreground"]}',
+        f'selection-background = {highlight["background"]}',
+        f'selection-foreground = {highlight["foreground"]}',
+        "",
+        f'font-family = {"Berkeley Mono" if is_light else "Berkeley Mono Retina"}',
+        f'font-thicken = {"true" if is_light else "false"}',
+    ]
+    destination = ROOT / "ghostty" / "themes" / palette["slug"]
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text("\n".join(lines) + "\n")
+
+
+def generate_neovim_palette(palette: dict) -> None:
+    bg, fg, accent, diff = (
+        palette["backgrounds"], palette["foregrounds"], palette["accents"], palette["diff"]
+    )
+    kanso = {
+        "inkBg0": bg["base"], "inkBg1": bg["surface0"], "inkBg2": bg["surface1"],
+        "inkBg3": bg["surface2"], "inkBg4": palette["highlight"]["background"],
+        "zenBg0": bg["crust"], "zenBg1": bg["surface0"], "zenBg2": bg["surface1"],
+        "zenBg3": bg["surface2"], "altBlue1": diff["hunkBackground"],
+        "altBlue2": palette["highlight"]["background"], "diffGreen": diff["addBackground"],
+        "diffRed": diff["deleteBackground"], "diffYellow": diff["changeEmphasis"],
+        "diffBlue": diff["changeBackground"], "gitGreen": diff["addForeground"],
+        "gitRed": diff["deleteForeground"], "gitYellow": diff["changeForeground"],
+        "red": accent["coral"], "red2": diff["deleteForeground"], "red3": accent["coral"],
+        "yellow": accent["gold"], "yellow2": diff["changeForeground"], "yellow3": accent["gold"],
+        "green": accent["sage"], "green2": diff["addForeground"], "green3": accent["sage"],
+        "green4": accent["olive"], "green5": accent["aqua"],
+        "blue": accent["blue"], "blue2": accent["aqua"], "blue3": accent["blue"],
+        "blue4": accent["aqua"], "violet": accent["mauve"], "violet2": accent["mauve"],
+        "violet3": accent["mauve"], "pink": accent["mauve"],
+        "orange": accent["ochre"], "orange2": accent["clay"], "aqua": accent["aqua"],
+        "fg": fg["text"], "fg2": fg["bright"], "gray": fg["muted"],
+        "gray2": fg["subtext"], "gray3": fg["subtext"], "gray4": fg["comment"],
+        "gray5": fg["muted"],
+    }
+    term = list(palette["ansi"].values())
+    rendered = (
+        f"-- Generated from palette/{palette['slug']}.json; do not edit by hand.\n"
+        "return {\n"
+        f"  raw = {lua_table(palette, 2)},\n"
+        f"  kanso = {lua_table(kanso, 2)},\n"
+        f"  terminal = {lua_table(term, 2)},\n"
+        "}\n"
+    )
+    module_name = "palette_light.lua" if palette["polarity"] == "light" else "palette.lua"
+    destination = ROOT / "nvim" / "lua" / "loden" / module_name
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(rendered)
+
+
+def generate_codex_theme(palette: dict) -> None:
+    """Generate a TextMate theme understood by Codex CLI's syntax renderer."""
+    bg, fg, accent, diff = (
+        palette["backgrounds"], palette["foregrounds"], palette["accents"], palette["diff"]
+    )
+
+    def rule(name: str, scope: str, foreground: str | None = None,
+             background: str | None = None, font_style: str | None = None) -> dict:
+        settings = {}
+        if foreground:
+            settings["foreground"] = foreground
+        if background:
+            settings["background"] = background
+        if font_style:
+            settings["fontStyle"] = font_style
+        return {"name": name, "scope": scope, "settings": settings}
+
+    settings = [
+        {"settings": {"background": bg["base"], "foreground": fg["text"],
+                      "caret": palette["highlight"]["background"],
+                      "selection": palette["highlight"]["background"],
+                      "invisibles": fg["muted"], "lineHighlight": bg["surface0"]}},
+        rule("Comments", "comment, punctuation.definition.comment", fg["comment"], font_style="italic"),
+        rule("Strings", "string", accent["sage"]),
+        rule("Numbers and constants", "constant.numeric, constant.language, constant.character", accent["ochre"]),
+        rule("Keywords", "keyword, storage.type, storage.modifier", accent["mauve"]),
+        rule("Types", "entity.name.type, entity.name.class, support.type, support.class", accent["gold"]),
+        rule("Functions", "entity.name.function, support.function, meta.function-call", accent["blue"]),
+        rule("Variables", "variable, support.variable", fg["text"]),
+        rule("Properties", "variable.other.property, support.constant", accent["aqua"]),
+        rule("Operators", "keyword.operator", accent["clay"]),
+        rule("Punctuation", "punctuation", fg["subtext"]),
+        rule("Headings", "markup.heading", accent["gold"], font_style="bold"),
+        rule("Links", "markup.underline.link", accent["blue"], font_style="underline"),
+        rule("Inserted diff", "markup.inserted, diff.inserted", diff["addForeground"], diff["addBackground"]),
+        rule("Deleted diff", "markup.deleted, diff.deleted", diff["deleteForeground"], diff["deleteBackground"]),
+        rule("Changed diff", "markup.changed, diff.changed", diff["changeForeground"], diff["changeBackground"]),
+    ]
+    theme = {"name": palette["name"], "author": "Loden theme generator",
+             "semanticClass": f"theme.{palette['slug']}", "settings": settings}
+    destination = ROOT / "codex" / "themes" / f"{palette['slug']}.tmTheme"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("wb") as output:
+        plistlib.dump(theme, output, fmt=plistlib.FMT_XML, sort_keys=False)
+
+
+def generate_claude_theme(palette: dict) -> None:
+    """Generate a Claude Code 2.1.118+ custom theme."""
+    bg, fg, accent, diff = (
+        palette["backgrounds"], palette["foregrounds"], palette["accents"], palette["diff"]
+    )
+    overrides = {
+        "claude": accent["ochre"], "claudeShimmer": accent["gold"],
+        "text": fg["text"], "inverseText": palette["highlight"]["foreground"],
+        "inactive": fg["muted"], "inactiveShimmer": fg["comment"], "subtle": fg["comment"],
+        "suggestion": accent["olive"], "permission": accent["gold"],
+        "permissionShimmer": accent["ochre"], "remember": accent["mauve"],
+        "success": accent["sage"], "error": accent["coral"], "warning": accent["gold"],
+        "warningShimmer": accent["ochre"], "merged": accent["mauve"],
+        "promptBorder": accent["olive"], "promptBorderShimmer": accent["sage"],
+        "planMode": accent["blue"], "autoAccept": accent["sage"],
+        "bashBorder": accent["clay"], "ide": accent["aqua"],
+        "fastMode": accent["ochre"], "fastModeShimmer": accent["gold"],
+        "diffAdded": diff["addBackground"], "diffRemoved": diff["deleteBackground"],
+        "diffAddedDimmed": bg["surface0"], "diffRemovedDimmed": bg["surface0"],
+        "diffAddedWord": diff["addEmphasis"], "diffRemovedWord": diff["deleteEmphasis"],
+        "userMessageBackground": bg["surface0"], "userMessageBackgroundHover": bg["surface1"],
+        "bashMessageBackgroundColor": bg["mantle"], "memoryBackgroundColor": bg["surface0"],
+        "selectionBg": palette["highlight"]["background"],
+        "rate_limit_fill": accent["olive"], "rate_limit_empty": bg["surface2"],
+        "briefLabelYou": accent["blue"], "briefLabelClaude": accent["ochre"],
+    }
+    theme = {"name": palette["name"], "base": palette["polarity"], "overrides": overrides}
+    destination = ROOT / "claude-code" / "themes" / f"{palette['slug']}.json"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(theme, indent=2) + "\n")
+
+
+def generate_app_palettes(palette: dict) -> None:
+    """Generate importable palettes for apps with constrained theme APIs."""
+    bg, fg, accent = palette["backgrounds"], palette["foregrounds"], palette["accents"]
+    slack_colors = [bg["mantle"], bg["surface0"], palette["highlight"]["background"],
+                    palette["highlight"]["foreground"], bg["surface1"], fg["text"],
+                    accent["sage"], accent["coral"]]
+    slack = ROOT / "slack" / f"{palette['slug']}.txt"
+    slack.parent.mkdir(parents=True, exist_ok=True)
+    slack.write_text(",".join(slack_colors) + "\n")
+
+    linear_colors = [bg["base"], fg["text"], bg["mantle"], fg["text"],
+                     palette["highlight"]["background"], palette["highlight"]["foreground"]]
+    linear = ROOT / "linear" / f"{palette['slug']}.txt"
+    linear.parent.mkdir(parents=True, exist_ok=True)
+    linear.write_text(",".join(linear_colors) + "\n")
+
+
+def generate_shared_highlights(palette: dict) -> None:
+    highlight = palette["highlight"]
+
+    shell = ROOT / "shell" / "loden.zsh"
+    shell.parent.mkdir(parents=True, exist_ok=True)
+    shell.write_text(
+        "# Loden ZLE visual selection — generated; do not edit by hand.\n"
+        f'zle_highlight=(region:bg={highlight["background"]},fg={highlight["foreground"]})\n'
+    )
+
+    r, g, b = (int(highlight["background"][index : index + 2], 16) / 255 for index in (1, 3, 5))
+    macos = ROOT / "macos" / "apply-highlight.sh"
+    macos.parent.mkdir(parents=True, exist_ok=True)
+    macos.write_text(
+        "#!/bin/sh\n"
+        "# Loden system text highlight — generated; log out and back in after applying.\n"
+        f'defaults write -g AppleHighlightColor -string "{r:.6f} {g:.6f} {b:.6f} Other"\n'
+    )
+    macos.chmod(0o755)
+
+    bg, fg, accent = palette["backgrounds"], palette["foregrounds"], palette["accents"]
+    firefox_manifest = {
+        "manifest_version": 2,
+        "name": "Loden",
+        "version": "0.1.0",
+        "theme": {
+            "colors": {
+                "frame": bg["mantle"],
+                "frame_inactive": bg["crust"],
+                "tab_background_text": fg["subtext"],
+                "tab_text": fg["text"],
+                "toolbar": bg["surface0"],
+                "bookmark_text": fg["text"],
+                "icons": fg["subtext"],
+                "toolbar_field": bg["base"],
+                "toolbar_field_focus": bg["base"],
+                "toolbar_field_text": fg["text"],
+                "toolbar_field_border": bg["surface2"],
+                "toolbar_field_highlight": highlight["background"],
+                "toolbar_field_highlight_text": highlight["foreground"],
+                "popup": bg["surface0"],
+                "popup_text": fg["text"],
+                "popup_border": bg["surface2"],
+                "button_background_hover": bg["surface1"],
+                "button_background_active": highlight["background"],
+                "icons_attention": accent["gold"],
+            },
+            "properties": {"color_scheme": "dark", "content_color_scheme": "dark"},
+        },
+    }
+    firefox = ROOT / "firefox" / "manifest.json"
+    firefox.parent.mkdir(parents=True, exist_ok=True)
+    firefox.write_text(json.dumps(firefox_manifest, indent=2) + "\n")
+
+
+def generate_preview(palettes: dict[str, dict]) -> None:
+    destination = ROOT / "palette-preview.html"
+    audits = {
+        "dark": json.loads((ROOT / "reports" / "palette-audit.json").read_text()),
+        "light": json.loads((ROOT / "reports" / "palette-audit-light.json").read_text()),
+    }
+    data = (
+        "/* GENERATED_DATA_START */\n"
+        f"    const generatedPalettes = {json.dumps(palettes, separators=(',', ':'))};\n"
+        f"    const generatedAudits = {json.dumps(audits, separators=(',', ':'))};\n"
+        "    /* GENERATED_DATA_END */"
+    )
+    html = destination.read_text()
+    html, replacements = re.subn(
+        r"/\* GENERATED_DATA_START \*/.*?/\* GENERATED_DATA_END \*/",
+        data,
+        html,
+        count=1,
+        flags=re.DOTALL,
+    )
+    if replacements != 1:
+        raise RuntimeError("palette-preview.html is missing its generated-data markers")
+    destination.write_text(html)
+
+
+def main() -> None:
+    palettes = {"dark": load_palette("loden"), "light": load_palette("loden-light")}
+    for palette in palettes.values():
+        generate_ghostty(palette)
+        generate_neovim_palette(palette)
+        generate_codex_theme(palette)
+        generate_claude_theme(palette)
+        generate_app_palettes(palette)
+    generate_shared_highlights(palettes["dark"])
+    generate_preview(palettes)
+    print("Generated dark/light Loden themes for all supported applications")
+
+
+if __name__ == "__main__":
+    main()
