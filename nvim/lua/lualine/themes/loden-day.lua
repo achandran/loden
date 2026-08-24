@@ -1,5 +1,5 @@
 -- Loden Day
-local p = require("loden.palette_light").raw
+local p = require("loden.loden-day").raw
 local bg, fg, a = p.backgrounds, p.foregrounds, p.accents
 
 return {

@@ -1,7 +1,7 @@
 -- Copy this spec into your LazyVim plugins directory while developing Loden.
 return {
   {
-    dir = "/Users/anand/code/colo/nvim",
+    dir = "/Users/anand/code/loden/nvim",
     name = "loden.nvim",
     dependencies = { "webhooked/kanso.nvim" },
     lazy = false,

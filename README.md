@@ -33,7 +33,7 @@ The build fails if required contrast or perceptual-separation checks fail.
 
 ## Palette lab
 
-Open `palette-preview.html` in a color-managed browser. Universal interaction tokens live in `palette/loden-shared.json`; polarity-specific tokens live in `palette/loden.json` and `palette/loden-light.json`.
+Open `palette-preview.html` in a color-managed browser. Universal interaction tokens live in `palette/loden-shared.json`; polarity-specific tokens live in `palette/loden-night.json` and `palette/loden-day.json`.
 
 The preview includes:
 
@@ -47,7 +47,7 @@ The palette is authored in sRGB. The primary background is `#171812`.
 
 ## Palette and validation
 
-The audit writes [the dark report](reports/palette-audit.md), [the light report](reports/palette-audit-light.md), and machine-readable JSON covering WCAG, APCA, OKLCH, ΔEOK, and Machado color-vision simulations. Generation updates every integration from the same canonical JSON.
+The audit writes [the Night report](reports/loden-night-audit.md), [the Day report](reports/loden-day-audit.md), and machine-readable JSON covering WCAG, APCA, OKLCH, ΔEOK, and Machado color-vision simulations. Generation updates every integration from the same canonical JSON.
 
 Generated artifacts:
 

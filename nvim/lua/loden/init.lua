@@ -11,7 +11,7 @@ end
 
 function M.load(variant)
   local is_light = variant == "day" or variant == "light"
-  local palette = require(is_light and "loden.palette_light" or "loden.palette")
+  local palette = require(is_light and "loden.loden-day" or "loden.loden-night")
   local raw = palette.raw
   local bg, fg, accent, diff = raw.backgrounds, raw.foregrounds, raw.accents, raw.diff
   local highlight = raw.highlight

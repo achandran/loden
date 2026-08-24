@@ -85,7 +85,7 @@ def generate_neovim_palette(palette: dict) -> None:
         f"  terminal = {lua_table(term, 2)},\n"
         "}\n"
     )
-    module_name = "palette_light.lua" if palette["polarity"] == "light" else "palette.lua"
+    module_name = f"{palette['slug']}.lua"
     destination = ROOT / "nvim" / "lua" / "loden" / module_name
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(rendered)
@@ -244,8 +244,8 @@ def generate_shared_highlights(palette: dict) -> None:
 def generate_preview(palettes: dict[str, dict]) -> None:
     destination = ROOT / "palette-preview.html"
     audits = {
-        "dark": json.loads((ROOT / "reports" / "palette-audit.json").read_text()),
-        "light": json.loads((ROOT / "reports" / "palette-audit-light.json").read_text()),
+        "night": json.loads((ROOT / "reports" / "loden-night-audit.json").read_text()),
+        "day": json.loads((ROOT / "reports" / "loden-day-audit.json").read_text()),
     }
     data = (
         "/* GENERATED_DATA_START */\n"
@@ -267,23 +267,14 @@ def generate_preview(palettes: dict[str, dict]) -> None:
 
 
 def main() -> None:
-    palettes = {"dark": load_palette("loden"), "light": load_palette("loden-light")}
-    legacy_outputs = [
-        ROOT / "ghostty/themes/loden", ROOT / "ghostty/themes/loden-light",
-        ROOT / "codex/themes/loden.tmTheme", ROOT / "codex/themes/loden-light.tmTheme",
-        ROOT / "claude-code/themes/loden.json", ROOT / "claude-code/themes/loden-light.json",
-        ROOT / "slack/loden.txt", ROOT / "slack/loden-light.txt",
-        ROOT / "linear/loden.txt", ROOT / "linear/loden-light.txt",
-    ]
-    for output in legacy_outputs:
-        output.unlink(missing_ok=True)
+    palettes = {"night": load_palette("loden-night"), "day": load_palette("loden-day")}
     for palette in palettes.values():
         generate_ghostty(palette)
         generate_neovim_palette(palette)
         generate_codex_theme(palette)
         generate_claude_theme(palette)
         generate_app_palettes(palette)
-    generate_shared_highlights(palettes["dark"])
+    generate_shared_highlights(palettes["night"])
     generate_preview(palettes)
     print("Generated Loden Day and Loden Night themes for all supported applications")
 

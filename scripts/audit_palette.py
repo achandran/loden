@@ -12,7 +12,7 @@ from lodenlib import ROOT, apca, delta_e, load_palette, oklch, simulated_hex, wc
 SIMULATIONS = ("normal", "protan", "deutan", "tritan", "grayscale")
 
 
-def main(variant: str = "loden") -> None:
+def main(variant: str = "loden-night") -> None:
     palette = load_palette(variant)
     backgrounds = palette["backgrounds"]
     foregrounds = palette["foregrounds"]
@@ -145,7 +145,7 @@ def main(variant: str = "loden") -> None:
 
     reports = ROOT / "reports"
     reports.mkdir(exist_ok=True)
-    report_stem = "palette-audit" if variant == "loden" else f"palette-audit-{variant.removeprefix('loden-')}"
+    report_stem = f"{variant}-audit"
     json_report = reports / f"{report_stem}.json"
     markdown_report = reports / f"{report_stem}.md"
     json_report.write_text(json.dumps(report, indent=2) + "\n")
@@ -200,4 +200,4 @@ def main(variant: str = "loden") -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "loden")
+    main(sys.argv[1] if len(sys.argv) > 1 else "loden-night")

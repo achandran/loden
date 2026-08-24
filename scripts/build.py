@@ -5,6 +5,6 @@ from generate_themes import main as generate
 
 
 if __name__ == "__main__":
-    audit("loden")
-    audit("loden-light")
+    audit("loden-night")
+    audit("loden-day")
     generate()

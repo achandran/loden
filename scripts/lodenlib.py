@@ -10,11 +10,11 @@ from coloraide.everything import ColorAll as Color
 
 ROOT = Path(__file__).resolve().parent.parent
 PALETTE_DIR = ROOT / "palette"
-PALETTE_PATH = PALETTE_DIR / "loden.json"
+PALETTE_PATH = PALETTE_DIR / "loden-night.json"
 SHARED_PATH = PALETTE_DIR / "loden-shared.json"
 
 
-def load_palette(variant: str = "loden") -> dict:
+def load_palette(variant: str = "loden-night") -> dict:
     """Load a polarity-specific palette with universal Loden tokens merged in."""
     shared = json.loads(SHARED_PATH.read_text())
     specific = json.loads((PALETTE_DIR / f"{variant}.json").read_text())
