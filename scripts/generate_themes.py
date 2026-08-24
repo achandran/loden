@@ -86,13 +86,13 @@ def generate_neovim_palette(palette: dict) -> None:
         "}\n"
     )
     module_name = f"{palette['slug']}.lua"
-    destination = ROOT / "nvim" / "lua" / "loden" / module_name
+    destination = ROOT / "lua" / "loden" / module_name
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(rendered)
 
 
 def generate_neovim_default() -> None:
-    destination = ROOT / "nvim" / "colors" / "loden.lua"
+    destination = ROOT / "colors" / "loden.lua"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text('require("loden").load("day")\n')
 

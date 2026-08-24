@@ -53,9 +53,9 @@ Generated artifacts:
 
 - `ghostty/themes/loden-night`
 - `ghostty/themes/loden-day`
-- `nvim/colors/loden-night.lua`
-- `nvim/colors/loden-day.lua`
-- `nvim/lua/loden/`
+- `colors/loden.lua`, `colors/loden-night.lua`, and `colors/loden-day.lua`
+- `lua/loden/`
+- `lua/lualine/themes/`
 - `nvim/lazyvim-plugin.lua`
 - `shell/loden.zsh`
 - `macos/apply-highlight.sh`
@@ -82,7 +82,15 @@ The generated dark theme uses Berkeley Mono Retina without font thickening. The 
 
 ### Neovim and LazyVim
 
-Add `nvim/lazyvim-plugin.lua` to your LazyVim plugin specifications and place the generated `nvim/colors/` and `nvim/lua/loden/` files somewhere on Neovim's runtime path. Select `loden`, `loden-day`, or `loden-night` with `:colorscheme`; `loden` defaults to Loden Day.
+Copy `nvim/lazyvim-plugin.lua` into your LazyVim plugin specifications, then run `:Lazy sync`. The spec installs `achandran/loden` and its Kanso dependency directly from GitHub. Select `loden`, `loden-day`, or `loden-night` with `:colorscheme`; `loden` defaults to Loden Day.
+
+On macOS, the included LazyVim spec also follows system appearance changes in running Neovim sessions. Install its native watcher first:
+
+```sh
+brew install cormacrelf/tap/dark-notify
+```
+
+Loden Day is selected in Light appearance and Loden Night in Dark appearance. Remove the `cormacrelf/dark-notify` entry from the spec if automatic switching is not wanted.
 
 ## AI coding tools
 
@@ -99,6 +107,7 @@ In Linear Preferences → Interface and theme, create a custom theme and paste t
 ## Repository layout
 
 - `palette/`: canonical shared, dark, and light color definitions
+- `colors/` and `lua/`: Neovim plugin runtime files
 - `scripts/`: Python generation and automated palette audits
 - `reports/`: generated human- and machine-readable audit results
 - `palette-preview.html`: standalone visual palette and diff laboratory
