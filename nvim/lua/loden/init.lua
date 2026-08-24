@@ -148,6 +148,21 @@ function M.load(variant)
   vim.o.background = is_light and "light" or "dark"
   require("kanso").load(is_light and "pearl" or "ink")
   vim.g.colors_name = is_light and "loden-day" or "loden-night"
+
+  local function sync_lualine()
+    local lualine = package.loaded["lualine"]
+    if not lualine then
+      return
+    end
+    local config = lualine.get_config()
+    config.options.theme = vim.g.colors_name
+    lualine.setup(config)
+  end
+  if package.loaded["lualine"] then
+    sync_lualine()
+  else
+    vim.schedule(sync_lualine)
+  end
 end
 
 return M

@@ -12,15 +12,27 @@ return {
     },
   },
   {
+    "cormacrelf/dark-notify",
+    config = function()
+      require("dark_notify").run({
+        schemes = {
+          light = { colorscheme = "loden" },
+          dark = { colorscheme = "loden-night" },
+        },
+      })
+    end,
+  },
+  {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "loden-night",
+      colorscheme = "loden",
     },
   },
   {
     "nvim-lualine/lualine.nvim",
-    opts = {
-      options = { theme = "loden-night" },
-    },
+    opts = function(_, opts)
+      opts.options = opts.options or {}
+      opts.options.theme = vim.g.colors_name == "loden-night" and "loden-night" or "loden-day"
+    end,
   },
 }

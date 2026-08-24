@@ -82,7 +82,7 @@ The generated dark theme uses Berkeley Mono Retina without font thickening. The 
 
 ### Neovim and LazyVim
 
-Add `nvim/lazyvim-plugin.lua` to your LazyVim plugin specifications and place the generated `nvim/colors/` and `nvim/lua/loden/` files somewhere on Neovim's runtime path. Select `loden-night` or `loden-day` with `:colorscheme`.
+Add `nvim/lazyvim-plugin.lua` to your LazyVim plugin specifications and place the generated `nvim/colors/` and `nvim/lua/loden/` files somewhere on Neovim's runtime path. Select `loden`, `loden-day`, or `loden-night` with `:colorscheme`; `loden` defaults to Loden Day.
 
 ## AI coding tools
 

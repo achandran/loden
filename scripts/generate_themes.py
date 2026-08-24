@@ -91,6 +91,12 @@ def generate_neovim_palette(palette: dict) -> None:
     destination.write_text(rendered)
 
 
+def generate_neovim_default() -> None:
+    destination = ROOT / "nvim" / "colors" / "loden.lua"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text('require("loden").load("day")\n')
+
+
 def generate_codex_theme(palette: dict) -> None:
     """Generate a TextMate theme understood by Codex CLI's syntax renderer."""
     bg, fg, accent, diff = (
@@ -274,6 +280,7 @@ def main() -> None:
         generate_codex_theme(palette)
         generate_claude_theme(palette)
         generate_app_palettes(palette)
+    generate_neovim_default()
     generate_shared_highlights(palettes["night"])
     generate_preview(palettes)
     print("Generated Loden Day and Loden Night themes for all supported applications")
